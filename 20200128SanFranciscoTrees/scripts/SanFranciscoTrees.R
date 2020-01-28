@@ -9,3 +9,6 @@
 library(dplyr)
 library(ggplot2)
 library(readr)
+
+sf_trees <- 
+  read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')
