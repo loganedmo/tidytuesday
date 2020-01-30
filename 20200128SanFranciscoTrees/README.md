@@ -2,4 +2,4 @@
 
 Plot exploring median age of trees in binned geographic areas.
 
-![alt text](https://github.com/loganedmo/tidytuesday/tree/master/20200128SanFranciscoTrees/plots/SFTreeAges.png)
+![SFTreeAges](https://user-images.githubusercontent.com/60403224/73427073-9909c400-42fb-11ea-9114-f858125e59d4.png)
