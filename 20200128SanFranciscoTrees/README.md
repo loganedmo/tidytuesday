@@ -1,4 +1,4 @@
-# Jan 30th 2020: San Francisco Trees
+# Jan 28th 2020: San Francisco Trees
 
 Plot exploring median age of trees in binned geographic areas.
 
