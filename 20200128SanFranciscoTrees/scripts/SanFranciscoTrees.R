@@ -147,7 +147,7 @@ ggmap(sf_map_stamen, extent = "device") +
         plot.subtitle = element_text(face = "bold"),
         plot.caption = element_text(face = "italic", hjust = 0.0),
         legend.title = element_text(size = 8)) +
-  labs(title = "\nWhere are new growth planted trees in San Francisco?",
+  labs(title = "\nWhere are new growth trees in San Francisco?",
        subtitle = "Primarily on the fringes of the city\n",
        caption = "Trees planted prior to 1955 have undocumented age\n#tidytuesday | @logedmonds")
   
