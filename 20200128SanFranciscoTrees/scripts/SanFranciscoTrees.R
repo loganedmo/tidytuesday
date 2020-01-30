@@ -1,9 +1,15 @@
 #####################################################################
 # TIDY TUESDAY JAN. 28TH 2020: SAN FRANCISCO TREES
 #
-#
-#
 # https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-28/readme.md
+#
+# TODO:
+# tree age map - change binwidth to SF city block (~475 x 325 ft)
+# need to convert lat/lon degrees to feet
+#
+# create map theme
+#
+# better legend breaks
 #####################################################################
 
 #############################################
@@ -16,6 +22,7 @@ library(ggplot2)
 library(lubridate)
 library(readr)
 library(RColorBrewer)
+library(viridis)
 
 #############################################
 # import data
@@ -30,20 +37,21 @@ sf_trees <-
 # ~ 2,000 rows with missing lat/lon
 #############################################
 
-sf_trees <- 
+sf_trees_all <- 
 sf_trees %>% 
-  filter(date >= '1972-01-01' & # sparse data prior to 1972
-         !is.na(latitude) & !is.na(longitude)) %>% 
+  filter(!is.na(latitude) & !is.na(longitude)) %>% 
   mutate(date = if_else(is.na(date), 
-                as_date('1955-01-01'), date))
+                as_date('1955-01-01'), date),
+         age = (today() - date)/365.25) # years with decimal
+
+sf_trees_new <- 
+sf_trees_all %>% 
+  filter(date >= '1972-01-01') # sparse data prior to 1972
 
 #############################################
 # static mapping of SF
-# use Google's Static Map API service
 # SF lat/lon - 37.7749° N, 122.4194° W
 #############################################
-
-ggmap::register_google(key = "AIzaSyA3dDU9SYrydFwnDA8wKiLwSqP0AnivDG0")
 
 # lat/lon boundary for tree locations
 sf_tree_bb <- c(left = -122.53,
@@ -55,8 +63,7 @@ sf_tree_bb <- c(left = -122.53,
 sf_map_stamen <- 
   get_stamenmap(bbox = sf_tree_bb,
                 zoom = 13,
-                maptype = "terrain",
-                color = "bw",
+                maptype = "toner-lite",
                 force = TRUE)
 
 ggmap(sf_map_stamen, extent = "device") +
@@ -69,23 +76,92 @@ ggmap(sf_map_stamen, extent = "device") +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank(),
         axis.title = element_blank(),
-        plot.background = element_rect(fill = "#f5f5f2", 
+        plot.background = element_rect(fill = "#D9D9D9", 
                                        color = NA),
-        panel.background = element_rect(fill = "#f5f5f2",                                             color = NA), 
-        legend.background = element_rect(fill = "#f5f5f2",                                             color = NA),
-        panel.border = element_blank())
+        panel.background = element_rect(fill = "#D9D9D9",                                             color = NA), 
+        legend.background = element_rect(fill = "#D9D9D9",                                             color = NA),
+        panel.border = element_blank(),
+        plot.title = element_text(face = "bold"),
+        plot.caption = element_text(face = "italic")) +
+  labs(title = "Density of Tree Plantings in San Francisco",
+       caption = "#tidytuesday | Logan Edmonds @logedmonds")
 
-ggmap(sf_map_stamen) +
-  stat_summary2d()
+#############################################
+# median age of trees by geographic bins
+# 
+# binning 2d area based on third variable (i.e. age):
+# https://stackoverflow.com/questions/18285415/density2d-plot-using-another-variable-for-the-fill-similar-to-geom-tile/
+#
+# continuous scale tips and legend placement:
+# https://timogrossenbacher.ch/2016/12/beautiful-thematic-maps-with-ggplot2-only/
+#
+# legend positioning:
+# https://stackoverflow.com/questions/28816467/ggplot-position-legend-in-top-left/28818021
+#
+# caption positioning:
+# https://ggplot2.tidyverse.org/articles/releases/ggplot2-2.2.0.html
+#############################################
 
+legend_breaks <- c(5, 10, 20, 30, 40, 50, 60)
+
+legend_labels <- c("<5", "10", "20", "30", "40", "50", "60+")
+
+age_plot_all <- 
+ggmap(sf_map_stamen, extent = "device") +
+  stat_summary_2d(data = sf_trees_all, 
+                 aes(x = longitude, y = latitude, z = age),
+                 fun = median,
+                 binwidth = c(0.0025, 0.0025),
+                 #color = "white",
+                 alpha = 0.2) +
+  #scale_fill_manual(values = viridis(8),
+  #                  breaks = legend_breaks,
+  #                  labels = legend_labels,
+  #                  name = "Median Tree Age",
+  #                  guide = guide_colorbar(
+  #                    direction = "horizontal",
+  #                    title.position = "top",
+  #                    barheight = unit(2, units = "mm"),
+  #                    barwidth = unit(50, units = "mm"))) +
+  
+  #horizontal legend courtesy of Timo Grossenbacher
+  scale_fill_viridis(option = "viridis",
+                     name = "Median Tree Age",
+                     guide = guide_colorbar(
+                     direction = "horizontal",
+                     title.position = "top",
+                     barheight = unit(2, units = "mm"),
+                     barwidth = unit(50, units = "mm")
+                       )) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        plot.background = element_rect(fill = "#D9D9D9", 
+                                       color = NA),
+        panel.background = element_rect(fill = "#D9D9D9",                                             color = NA), 
+        legend.background = element_rect(fill = "#D9D9D9",                                             color = NA),
+        panel.border = element_blank(),
+        legend.position = "top",
+        legend.justification = "left",
+        plot.title = element_text(size = 12, face = "bold"),
+        plot.subtitle = element_text(face = "bold"),
+        plot.caption = element_text(face = "italic", hjust = 0.0),
+        legend.title = element_text(size = 8)) +
+  labs(title = "\nWhere are new growth planted trees in San Francisco?",
+       subtitle = "Primarily on the fringes of the city\n",
+       caption = "Trees planted prior to 1955 have undocumented age\n#tidytuesday | @logedmonds")
+  
 #############################################
 # deprecated code
-# Google Maps API offers less flexibility
-# than Stamen Maps
+#
+# Google's Static Map API service
+# offers less flexibility than Stamen Maps
 #############################################
 
-# Google Maps raster object
-sf_map_google <- 
-  get_googlemap(center = c(lon = -122.434, lat = 37.761),
-                zoom = 12, scale = 2, 
-                maptype = "terrain")
+# ggmap::register_google(key = "")
+# 
+# # Google Maps raster object
+# sf_map_google <- 
+#   get_googlemap(center = c(lon = -122.434, lat = 37.761),
+#                 zoom = 12, scale = 2, 
+#                 maptype = "terrain")
