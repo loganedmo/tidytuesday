@@ -8,6 +8,7 @@ library(dplyr)
 library(ggplot2)
 library(readr)
 library(stringr)
+library(tibble)
 
 #############################################
 # read data
@@ -61,7 +62,19 @@ sb_team_attendance <-
 # https://www.littlemissdata.com/blog/highlight
 #############################################
 
-sb_colors <- c("#d9d9d9", "#8080ff")
+# team colors: https://encycolorpedia.com/teams/american-football/nfl
+sb_colors <- tibble(
+  full_name = c("Baltimore Ravens", "Denver Broncos", 
+                "Green Bay Packers", "Indianapolis Colts",
+                "Kansas City Chiefs", "New England Patriots",
+                "New Orleans Saints", "New York Giants",
+                "Philadelphia Eagles", "Pittsburgh Steelers",
+                "Seattle Seahawks", "Tampa Bay Buccaneers"),
+  team_color = c("#241773", "#fb4f14", "#203731",
+                 "#002c5f", "#e31837", "#002244",
+                 "#d3bc8d", "#0b2265", "#004c54",
+                 "#ffb612", "#002244", "#d50a0a")
+)
 
   ggplot() +
   geom_line(data = home_attendance,
@@ -74,8 +87,12 @@ sb_colors <- c("#d9d9d9", "#8080ff")
   scale_y_continuous(limits = c(0, 100000), 
                      breaks = seq(0, 100000, 25000)) +
   facet_wrap(~year, nrow = 5, ncol = 4) +
+  scale_color_manual(values = sb_colors$team_color) +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
-        strip.background = element_rect(color = "transparent"), 
-        strip.text = element_text(size = 10, vjust = 1, face = "plain"))
+        panel.background = element_rect(fill = "grey"),
+        plot.background = element_rect(fill = "grey"),
+        legend.position = "none")
+        #strip.background = element_rect(color = "transparent"), 
+        #strip.text = element_text(size = 10, vjust = 1, face = "plain"))
