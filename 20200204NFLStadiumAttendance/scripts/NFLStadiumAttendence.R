@@ -70,13 +70,12 @@ sb_colors <- c("#d9d9d9", "#8080ff")
                 color = alpha("#d9d9d9", 0.8)) +
   geom_line(data = sb_team_attendance,
             aes(x = home_game, y = weekly_attendance, 
-                group = full_name), 
-                color = "#8080ff") + 
+                group = full_name, color = full_name)) + 
   scale_y_continuous(limits = c(0, 100000), 
                      breaks = seq(0, 100000, 25000)) +
-  scale_color_manual(values = sb_colors) +
-  scale_alpha_manual(values = c(0.1, 0.8)) +
   facet_wrap(~year, nrow = 5, ncol = 4) +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(color = "transparent"), 
+        strip.text = element_text(size = 10, vjust = 1, face = "plain"))
