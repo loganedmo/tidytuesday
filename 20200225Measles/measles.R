@@ -12,6 +12,7 @@ library(readr)
 library(sf)
 library(stringr)
 library(tmap)
+library(viridis)
 
 # convert first character to upper case
 firstup <- function(x) {
@@ -69,12 +70,42 @@ ok_all <-
 
 #############################################
 # mapping counties
+# Zev Ross tmap guide:
+# http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/#part-2-creating-beautiful-maps-with-tmap
+#
+# adding viridis fill"
+# https://johnmackintosh.com/2017-09-01-easy-maps-with-tmap/
 #############################################
+viridis_cols <- inferno(7)
 
+cuts <- c(50, 85, 88, 91, 94, 97, 99.9, 100)
 
 tm_shape(ok_all) +
-  tm_polygons("overall",
-              style = "quantile", border.col = "white") +
+  tm_polygons("overall", 
+              breaks = cuts,
+              palette = viridis_cols,
+              border.alpha = 0.5,
+              border.col = "white") +
   tm_text("county", 
           size = 0.5,
-          col = "white")
+          col = "white") +
+  tm_layout(title = "Oklahoma Measles, Mumps, Rubella (MMR) Vaccination Rates\n", 
+            asp = 0, 
+            legend.position = c(0.1, 0.1), 
+            main.title.fontface = "bold",
+            title.size = 1.1,
+            title.position = c("center", "top"),
+            title.color = "white",
+            inner.margins = c(0.1, 0.08, 0.15, 0.08), 
+            outer.margins = c(0.08, 0, 0, 0),
+            bg.color = "black") +
+  tm_legend(legend.title.color = "white",
+            legend.text.color = "white") +
+  tm_add_legend(type = "fill", 
+                border.col = "white", 
+                border.alpha = 0.1,
+                labels = c("<85%", "85 - 88%", "88 - 91%",
+                           "91 - 94%", "94 - 97%", "97 - 99.9%",
+                           "100%"),
+                col = viridis_cols)
+  
