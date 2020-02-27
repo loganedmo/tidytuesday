@@ -23,11 +23,13 @@ firstup <- function(x) {
 # import data
 #############################################
 
+# "Le Flore" county is misspelled
 ok_measles <- 
   read_csv("https://raw.githubusercontent.com/WSJ/measles-data/master/state-overviews.csv") %>% 
   filter(state == "Oklahoma") %>% 
-  mutate(overall = as.numeric(overall)) %>% 
-  rename(county = `county/district`)
+  rename(county  = `county/district`) %>% 
+  mutate(overall = as.numeric(overall),
+         county  = recode(county, "Le" = "Le Flore"))
 
 #############################################
 # shapefile data for OK counties
@@ -57,15 +59,22 @@ county_miscodes <-
 # replace mismatches with correct names
 ok_counties$county[county_miscodes] <- correct_names
 
-
+#############################################
+# join measles county level data with county sf
+#############################################
 
 ok_all <- 
   ok_counties %>% 
     left_join(ok_measles, by = "county")
 
+#############################################
+# mapping counties
+#############################################
+
+
 tm_shape(ok_all) +
   tm_polygons("overall",
-              style = "quantile") +
+              style = "quantile", border.col = "white") +
   tm_text("county", 
           size = 0.5,
           col = "white")
