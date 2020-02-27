@@ -83,6 +83,7 @@ cut_labels <-
   c("<85%", "85 - 88%", "88 - 91%", "91 - 94%", 
     "94 - 97%", "97 - 99.9%", "100%")
 
+ok_measles_map <- 
 tm_shape(ok_all) +
   tm_polygons("overall", 
               breaks = cuts,
@@ -93,23 +94,30 @@ tm_shape(ok_all) +
   tm_text("county", 
           size = 0.5,
           col = "white") +
-  tm_layout(title = "Oklahoma Measles, Mumps, Rubella (MMR) Vaccination Rates\n", 
+  tm_layout(title = "\nOklahoma Measles, Mumps, Rubella (MMR) School Vaccinations", 
             asp = 0, 
-            legend.position = c(0.1, 0.1), 
             main.title.fontface = "bold",
-            title.size = 1.1,
-            title.position = c("center", "top"),
+            title.size = 1.3,
+            title.position = c(0.034, 0.93),
             title.color = "white",
-            inner.margins = c(0.1, 0.08, 0.15, 0.08), 
-            outer.margins = c(0.08, 0, 0, 0),
+            legend.position = c(0.1, 0.1), 
+            inner.margins = c(0.0, 0.03, 0.0, 0.03), 
+            outer.margins = c(0.1, 0, 0.1, 0),
             bg.color = "black") +
   tm_legend(legend.title.color = "white",
             legend.text.color = "white",
-            legend.position = c(0.175, 0.3)) +
+            legend.position = c(0.2, 0.42)) +
   tm_add_legend(type = "fill", 
                 border.col = "white", 
                 border.alpha = 0.1, 
                 labels = cut_labels,
+                title = "2017 Rates",
                 col = viridis_cols) +
-  tm_credits("Data | Wall Street Journal\nAuthor | Logan Edmonds\n@logedmonds", col = "white", position = c(0.02, 0))
-  
+  tm_credits("Data | Wall Street Journal\nAuthor | Logan Edmonds\n@logedmonds", 
+             col = "white", 
+             position = c(0.035, 0.04))
+
+tmap_save(ok_measles_map,
+          '20200225Measles/plots/ok_measles.png', 
+          width = 20, height = 18, units = "cm")
+
