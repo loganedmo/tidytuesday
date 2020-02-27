@@ -79,13 +79,17 @@ ok_all <-
 viridis_cols <- inferno(7)
 
 cuts <- c(50, 85, 88, 91, 94, 97, 99.9, 100)
+cut_labels <- 
+  c("<85%", "85 - 88%", "88 - 91%", "91 - 94%", 
+    "94 - 97%", "97 - 99.9%", "100%")
 
 tm_shape(ok_all) +
   tm_polygons("overall", 
               breaks = cuts,
               palette = viridis_cols,
               border.alpha = 0.5,
-              border.col = "white") +
+              border.col = "white", 
+              legend.show = FALSE) +
   tm_text("county", 
           size = 0.5,
           col = "white") +
@@ -100,12 +104,12 @@ tm_shape(ok_all) +
             outer.margins = c(0.08, 0, 0, 0),
             bg.color = "black") +
   tm_legend(legend.title.color = "white",
-            legend.text.color = "white") +
+            legend.text.color = "white",
+            legend.position = c(0.175, 0.3)) +
   tm_add_legend(type = "fill", 
                 border.col = "white", 
-                border.alpha = 0.1,
-                labels = c("<85%", "85 - 88%", "88 - 91%",
-                           "91 - 94%", "94 - 97%", "97 - 99.9%",
-                           "100%"),
-                col = viridis_cols)
+                border.alpha = 0.1, 
+                labels = cut_labels,
+                col = viridis_cols) +
+  tm_credits("Data | Wall Street Journal\nAuthor | Logan Edmonds\n@logedmonds", col = "white", position = c(0.02, 0))
   
