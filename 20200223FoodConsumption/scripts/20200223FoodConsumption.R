@@ -11,6 +11,7 @@ library(countrycode) # match country -- continent
 library(dplyr)
 library(forcats)
 library(ggplot2)
+library(ggwaffle)
 library(readr)
 library(waffle)
 
@@ -27,12 +28,23 @@ food_consumption %>%
          region = countrycode(country, "country.name", "region")) %>% 
   mutate_if(is.character, as_factor)
 
+meat_consumption <- 
+  food_consumption %>% 
+  filter(food_category %in% meat_sources) %>% 
+  group_by(continent, food_category) %>% 
+  summarise(consumption = sum(consumption)) %>% 
+  mutate(consumption_perc = consumption/sum(consumption))
+
 #############################################
 # waffle chart
 #
 # example blog:
 # https://www.nsgrantham.com/food-carbon-footprint
 #############################################
+
+meat_consumption %>% 
+  ggplot() +
+    geom_waffle(aes(values = consumption_perc, fill = continent), inherit.aes = FALSE)
 
 # example waffle plot code
 ggplot() +
@@ -42,9 +54,4 @@ ggplot() +
 
 meat_sources <- c("Pork", "Poultry", "Beef", "Lamb & Goat", "Fish")
 
-meat_consumption <- 
-food_consumption %>% 
-  filter(food_category %in% meat_sources) %>% 
-  group_by(continent, food_category) %>% 
-  summarise(consumption = sum(consumption)) %>% 
-  mutate(consumption_perc = consumption/sum(consumption))
+

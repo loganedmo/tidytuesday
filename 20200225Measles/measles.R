@@ -7,7 +7,7 @@
 library(dplyr)
 library(forcats)
 library(ggplot2)
-library(ggthemes)
+library(maps)
 library(readr)
 library(sf)
 library(stringr)

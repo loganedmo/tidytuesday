@@ -76,23 +76,31 @@ sb_colors <- tibble(
                  "#ffb612", "#002244", "#d50a0a")
 )
 
-  ggplot() +
+# team logos
+img_ravens <- png::readPNG("20200204NFLStadiumAttendance/img/baltimore-ravens.png")
+ravens <- grid::rasterGrob(img_ravens, interpolate = T)
+
+# faceted line
+ggplot() +
   geom_line(data = home_attendance,
             aes(x = home_game, y = weekly_attendance, 
                 group = full_name), 
-                color = alpha("#d9d9d9", 0.8)) +
+                color = alpha("#d9d9d9", 0.9)) +
   geom_line(data = sb_team_attendance,
             aes(x = home_game, y = weekly_attendance, 
                 group = full_name, color = full_name)) + 
   scale_y_continuous(limits = c(0, 100000), 
                      breaks = seq(0, 100000, 25000)) +
+  annotation_custom(ravens, xmin = 1, 
+                    xmax = 5, ymin = 30000, ymax = 100000) +
   facet_wrap(~year, nrow = 5, ncol = 4) +
   scale_color_manual(values = sb_colors$team_color) +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
-        panel.background = element_rect(fill = "grey"),
-        plot.background = element_rect(fill = "grey"),
+        panel.grid = element_blank(),
+        panel.grid.major = element_line(colour = "transparent"), 
+        panel.grid.minor = element_line(colour = "transparent"),
+        #plot.background = element_rect(fill = "#737373"),
+        #panel.background = element_rect(fill = "#737373"),
         legend.position = "none")
-        #strip.background = element_rect(color = "transparent"), 
-        #strip.text = element_text(size = 10, vjust = 1, face = "plain"))
