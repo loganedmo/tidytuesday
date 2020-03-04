@@ -1,3 +1,3 @@
-# TIDY TUESDAY FEB. 25TH 2020: MEASLES OUTBREAK
+# TIDY TUESDAY MARCH 3RD 2020: NHL POINTS
 
-![OK Measles](https://github.com/loganedmo/tidytuesday/blob/master/20200225Measles/plots/ok_measles.png)
+![OK Measles](https://github.com/loganedmo/tidytuesday/blob/master/20200303/plots/ovechkin_plot.png)
